@@ -7,7 +7,6 @@ import {
   Bell,
   User,
   Sparkles,
-  Settings,
   Sun,
   Moon,
   Flame,
@@ -19,9 +18,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { FloatingParticles } from '@/components/floating-particles';
 import { useAppStore } from '@/lib/store';
 import type { UserProfile } from '@shared/types';
 
@@ -49,8 +48,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const ThemeIcon = currentThemeOption.icon;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+    <div className="min-h-screen bg-background relative">
+      <FloatingParticles />
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none z-0" />
       
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between gap-4">

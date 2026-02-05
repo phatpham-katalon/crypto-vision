@@ -13,7 +13,8 @@ interface Particle {
 }
 
 export function FloatingParticles() {
-  const { theme } = useAppStore();
+  const { profile } = useAppStore();
+  const theme = profile.theme;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
