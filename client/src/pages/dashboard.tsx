@@ -84,6 +84,45 @@ export default function Dashboard() {
 
       <MarketStats data={globalData} isLoading={globalLoading} />
 
+      <section>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="text-2xl font-bold">Top Cryptocurrencies</h2>
+            <p className="text-muted-foreground text-sm mt-1">Real-time prices for the top coins by market cap</p>
+          </div>
+          <Link href="/markets">
+            <Button variant="outline" className="gap-1" data-testid="link-view-markets">
+              View all <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+        {coinsLoading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <PriceCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <motion.div 
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.05 }}
+          >
+            {topCoins?.slice(0, 8).map((coin, index) => (
+              <motion.div
+                key={coin.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <PriceCard coin={coin} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </section>
+
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card className="border border-border/50 bg-card/50 backdrop-blur-sm">

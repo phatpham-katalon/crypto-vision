@@ -133,19 +133,13 @@ export async function registerRoutes(
       );
       
       if (!data || !data.prices) {
-        return res.json({ prices: [], coinId: id, range });
+        return res.json({ prices: [], market_caps: [], total_volumes: [] });
       }
       
-      const prices = data.prices.map(([timestamp, price]: [number, number]) => ({
-        timestamp,
-        price,
-        date: new Date(timestamp).toISOString(),
-      }));
-      
-      res.json({ prices, coinId: id, range });
+      res.json(data);
     } catch (error: any) {
       console.error("Error fetching price history:", error.message);
-      res.json({ prices: [], coinId: req.params.id, range: req.params.range });
+      res.json({ prices: [], market_caps: [], total_volumes: [] });
     }
   });
 

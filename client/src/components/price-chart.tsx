@@ -94,11 +94,12 @@ export function PriceChart({
 
   const gradientId = `chart-gradient-${isPositive ? 'up' : 'down'}`;
   const strokeColor = isPositive ? 'rgb(34 197 94)' : 'rgb(239 68 68)';
+  const hasData = chartData.length > 0;
 
   return (
     <Card className="p-6 border border-border/50 bg-card/50">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h3 className="text-lg font-semibold">Price Chart</h3>
+        <h3 className="text-lg font-semibold" data-testid="price-chart-heading">Price Chart</h3>
         <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
           {timeRanges.map((range) => (
             <Button
@@ -116,6 +117,15 @@ export function PriceChart({
       </div>
 
       <div className="h-[300px]">
+        {!hasData ? (
+          <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+            <svg className="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+            <p className="text-sm">Chart data temporarily unavailable</p>
+            <p className="text-xs mt-1">Please try again in a moment</p>
+          </div>
+        ) :
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
@@ -166,6 +176,7 @@ export function PriceChart({
             />
           </AreaChart>
         </ResponsiveContainer>
+        }
       </div>
     </Card>
   );

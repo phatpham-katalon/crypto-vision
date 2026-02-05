@@ -31,82 +31,91 @@ export function PriceCard({ coin, showWatchlistButton = true }: PriceCardProps) 
   return (
     <Link href={`/coin/${coin.id}`}>
       <motion.div
-        whileHover={{ y: -2 }}
+        whileHover={{ y: -4, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.15 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
       >
         <Card 
-          className="p-4 cursor-pointer border border-border/50 bg-card/50 backdrop-blur-sm hover-elevate group relative overflow-visible"
+          className="p-5 cursor-pointer border border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-md hover-elevate group relative overflow-visible shadow-lg hover:shadow-xl transition-shadow duration-300"
           data-testid={`price-card-${coin.id}`}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="relative flex-shrink-0">
-                <img
-                  src={coin.image}
-                  alt={coin.name}
-                  className="w-10 h-10 rounded-full"
-                  loading="lazy"
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-background border border-border flex items-center justify-center">
-                  <span className="text-[8px] font-bold text-muted-foreground">
-                    #{coin.market_cap_rank}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          <div className="relative z-10">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="relative flex-shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-md scale-110" />
+                  <img
+                    src={coin.image}
+                    alt={coin.name}
+                    className="relative w-14 h-14 rounded-full ring-2 ring-border/50"
+                    loading="lazy"
+                  />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-background border-2 border-border flex items-center justify-center shadow-sm">
+                    <span className="text-[9px] font-bold text-muted-foreground">
+                      #{coin.market_cap_rank}
+                    </span>
+                  </div>
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-lg font-bold truncate">{coin.name}</h3>
+                  <p className="text-sm text-muted-foreground uppercase font-medium tracking-wider">
+                    {coin.symbol}
+                  </p>
+                </div>
+              </div>
+
+              {showWatchlistButton && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                  onClick={toggleWatchlist}
+                  data-testid={`watchlist-toggle-${coin.id}`}
+                >
+                  {isWatchlisted ? (
+                    <Star className="w-5 h-5 fill-warning text-warning" />
+                  ) : (
+                    <StarOff className="w-5 h-5 text-muted-foreground" />
+                  )}
+                </Button>
+              )}
+            </div>
+
+            <div className="mt-5 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-3xl font-bold font-mono tracking-tight">
+                  {formatCurrency(coin.current_price)}
+                </p>
+                <div
+                  className={cn(
+                    'flex items-center gap-1.5 mt-2 px-2 py-1 rounded-full w-fit',
+                    isPositive 
+                      ? 'text-success bg-success/10' 
+                      : 'text-destructive bg-destructive/10'
+                  )}
+                >
+                  {isPositive ? (
+                    <TrendingUp className="w-4 h-4" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4" />
+                  )}
+                  <span className="text-sm font-semibold">
+                    {formatPercentage(coin.price_change_percentage_24h)}
                   </span>
                 </div>
               </div>
-              <div className="min-w-0">
-                <h3 className="font-semibold truncate">{coin.name}</h3>
-                <p className="text-sm text-muted-foreground uppercase">
-                  {coin.symbol}
-                </p>
-              </div>
+
+              {coin.sparkline_in_7d?.price && (
+                <Sparkline
+                  data={coin.sparkline_in_7d.price}
+                  isPositive={isPositive}
+                  width={100}
+                  height={45}
+                />
+              )}
             </div>
-
-            {showWatchlistButton && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                onClick={toggleWatchlist}
-                data-testid={`watchlist-toggle-${coin.id}`}
-              >
-                {isWatchlisted ? (
-                  <Star className="w-4 h-4 fill-warning text-warning" />
-                ) : (
-                  <StarOff className="w-4 h-4 text-muted-foreground" />
-                )}
-              </Button>
-            )}
-          </div>
-
-          <div className="mt-4 flex items-end justify-between gap-2">
-            <div>
-              <p className="text-2xl font-bold font-mono tracking-tight">
-                {formatCurrency(coin.current_price)}
-              </p>
-              <div
-                className={cn(
-                  'flex items-center gap-1 mt-1',
-                  isPositive ? 'text-success' : 'text-destructive'
-                )}
-              >
-                {isPositive ? (
-                  <TrendingUp className="w-4 h-4" />
-                ) : (
-                  <TrendingDown className="w-4 h-4" />
-                )}
-                <span className="text-sm font-medium">
-                  {formatPercentage(coin.price_change_percentage_24h)}
-                </span>
-              </div>
-            </div>
-
-            {coin.sparkline_in_7d?.price && (
-              <Sparkline
-                data={coin.sparkline_in_7d.price}
-                isPositive={isPositive}
-              />
-            )}
           </div>
         </Card>
       </motion.div>
@@ -170,20 +179,20 @@ function Sparkline({ data, isPositive, width = 80, height = 32 }: SparklineProps
 
 export function PriceCardSkeleton() {
   return (
-    <Card className="p-4 border border-border/50 bg-card/50">
-      <div className="flex items-start gap-3">
-        <Skeleton className="w-10 h-10 rounded-full" />
+    <Card className="p-5 border border-border/50 bg-card/50">
+      <div className="flex items-start gap-4">
+        <Skeleton className="w-14 h-14 rounded-full" />
         <div className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-3 w-12" />
+          <Skeleton className="h-5 w-28" />
+          <Skeleton className="h-3 w-14" />
         </div>
       </div>
-      <div className="mt-4 flex items-end justify-between">
+      <div className="mt-5 flex items-end justify-between">
         <div className="space-y-2">
-          <Skeleton className="h-7 w-28" />
-          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-6 w-20 rounded-full" />
         </div>
-        <Skeleton className="w-20 h-8" />
+        <Skeleton className="w-24 h-11" />
       </div>
     </Card>
   );
