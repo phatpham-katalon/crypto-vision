@@ -174,26 +174,96 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
-/* Bull Run Theme - Golden/Warm */
+/* Bull Run Theme - Golden/Warm with dramatic styling */
 .bull-run {
-  --primary: 38 92% 50%;
-  --primary-foreground: 0 0% 100%;
-  --accent: 45 93% 47%;
+  --button-outline: rgba(255,180,0, .20);
+  --badge-outline: rgba(255,180,0, .10);
+  --elevate-1: rgba(255,180,0, .08);
+  --elevate-2: rgba(255,180,0, .15);
+  --background: 30 30% 6%;
+  --foreground: 45 90% 95%;
+  --border: 38 40% 20%;
+  --card: 30 25% 10%;
+  --card-foreground: 45 90% 95%;
+  --card-border: 38 40% 18%;
+  --sidebar: 30 25% 8%;
+  --sidebar-foreground: 45 90% 95%;
+  --sidebar-border: 38 40% 15%;
+  --sidebar-primary: 38 95% 50%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 38 40% 18%;
+  --sidebar-accent-foreground: 45 90% 95%;
+  --sidebar-ring: 38 95% 50%;
+  --popover: 30 25% 12%;
+  --popover-foreground: 45 90% 95%;
+  --popover-border: 38 40% 20%;
+  --primary: 38 95% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 38 30% 18%;
+  --secondary-foreground: 45 90% 95%;
+  --muted: 30 20% 15%;
+  --muted-foreground: 38 30% 60%;
+  --accent: 25 95% 55%;
   --accent-foreground: 0 0% 0%;
-  --ring: 38 92% 50%;
-  --chart-1: 38 92% 50%;
+  --destructive: 0 84% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 38 30% 22%;
+  --ring: 38 95% 50%;
+  --chart-1: 38 95% 55%;
   --chart-2: 142 76% 50%;
+  --chart-3: 25 95% 60%;
+  --chart-4: 45 93% 55%;
+  --chart-5: 15 90% 55%;
+  --success: 142 76% 50%;
+  --success-foreground: 0 0% 0%;
+  --warning: 45 93% 55%;
+  --warning-foreground: 0 0% 0%;
 }
 
-/* Crypto Winter Theme - Blue/Cold */
+/* Crypto Winter Theme - Blue/Cold with icy styling */
 .crypto-winter {
-  --primary: 200 98% 39%;
-  --primary-foreground: 0 0% 100%;
-  --accent: 190 95% 39%;
-  --accent-foreground: 0 0% 100%;
-  --ring: 200 98% 39%;
-  --chart-1: 200 98% 50%;
-  --chart-2: 0 84% 60%;
+  --button-outline: rgba(100,200,255, .20);
+  --badge-outline: rgba(100,200,255, .10);
+  --elevate-1: rgba(100,200,255, .06);
+  --elevate-2: rgba(100,200,255, .12);
+  --background: 210 50% 5%;
+  --foreground: 200 70% 95%;
+  --border: 210 40% 18%;
+  --card: 210 45% 8%;
+  --card-foreground: 200 70% 95%;
+  --card-border: 210 40% 15%;
+  --sidebar: 210 50% 6%;
+  --sidebar-foreground: 200 70% 95%;
+  --sidebar-border: 210 40% 12%;
+  --sidebar-primary: 200 95% 50%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 210 40% 15%;
+  --sidebar-accent-foreground: 200 70% 95%;
+  --sidebar-ring: 200 95% 50%;
+  --popover: 210 45% 10%;
+  --popover-foreground: 200 70% 95%;
+  --popover-border: 210 40% 18%;
+  --primary: 200 95% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 210 35% 18%;
+  --secondary-foreground: 200 70% 95%;
+  --muted: 210 30% 14%;
+  --muted-foreground: 200 30% 55%;
+  --accent: 190 95% 45%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 210 35% 22%;
+  --ring: 200 95% 50%;
+  --chart-1: 200 95% 55%;
+  --chart-2: 0 70% 55%;
+  --chart-3: 190 95% 50%;
+  --chart-4: 220 80% 60%;
+  --chart-5: 180 70% 45%;
+  --success: 180 70% 45%;
+  --success-foreground: 0 0% 0%;
+  --warning: 200 95% 50%;
+  --warning-foreground: 0 0% 0%;
 }
 
 @layer base {

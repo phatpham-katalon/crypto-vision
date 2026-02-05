@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, Wallet, Target, Sparkles, ArrowRight, Flame } from 'lucide-react';
+import { TrendingUp, Wallet, Target, Sparkles, ArrowRight, Flame, Globe } from 'lucide-react';
 import { Link } from 'wouter';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PriceCard, PriceCardSkeleton } from '@/components/price-card';
 import { MarketStats } from '@/components/market-stats';
 import { AIInsights } from '@/components/ai-insights';
+import { CryptoGlobe } from '@/components/crypto-globe';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatPercentage, cn } from '@/lib/utils';
 import type { Coin, GlobalMarketData, TrendingCoin } from '@shared/types';
@@ -60,6 +61,26 @@ export default function Dashboard() {
           </Link>
         </div>
       </header>
+
+      <motion.section
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative"
+      >
+        <Card className="border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg">Global Crypto Activity</CardTitle>
+            </div>
+            <CardDescription>Live transactions flowing around the world</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <CryptoGlobe className="h-[200px]" />
+          </CardContent>
+        </Card>
+      </motion.section>
 
       <MarketStats data={globalData} isLoading={globalLoading} />
 
