@@ -188,7 +188,7 @@ export interface MarketInsight {
   generatedAt: number;
 }
 
-export type TimeRange = '1h' | '24h' | '7d' | '30d' | '90d' | '1y' | 'max';
+export type TimeRange = '1d' | '7d' | '30d' | '90d' | '1y' | 'all';
 
 export type ChartType = 'line' | 'area' | 'candlestick';
 

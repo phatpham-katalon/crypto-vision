@@ -16,12 +16,12 @@ import { formatCurrency, formatCompactCurrency, cn } from '@/lib/utils';
 import type { PriceHistory, TimeRange } from '@shared/types';
 
 const timeRanges: { value: TimeRange; label: string }[] = [
-  { value: '24h', label: '24H' },
+  { value: '1d', label: '24H' },
   { value: '7d', label: '7D' },
   { value: '30d', label: '1M' },
   { value: '90d', label: '3M' },
   { value: '1y', label: '1Y' },
-  { value: 'max', label: 'All' },
+  { value: 'all', label: 'All' },
 ];
 
 interface PriceChartProps {
@@ -40,17 +40,20 @@ export function PriceChart({
   onRangeChange,
 }: PriceChartProps) {
   const chartData = useMemo(() => {
-    if (!data?.prices) return [];
-    return data.prices.map(([timestamp, price]) => ({
-      timestamp,
-      price,
-      date: new Date(timestamp),
-    }));
+    if (!data?.prices || !Array.isArray(data.prices)) return [];
+    return data.prices.map((item) => {
+      const [timestamp, price] = Array.isArray(item) ? item : [0, 0];
+      return {
+        timestamp,
+        price,
+        date: new Date(timestamp),
+      };
+    });
   }, [data]);
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-    if (selectedRange === '24h') {
+    if (selectedRange === '1d') {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
     if (selectedRange === '7d' || selectedRange === '30d') {
