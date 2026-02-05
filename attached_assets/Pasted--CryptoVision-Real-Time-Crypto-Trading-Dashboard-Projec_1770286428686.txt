@@ -1,0 +1,255 @@
+# 🚀 CryptoVision - Real-Time Crypto Trading Dashboard
+
+## Project Overview
+
+**CryptoVision** is a modern, interactive cryptocurrency visualization webapp that provides real-time market data, portfolio tracking, and AI-powered insights. Built with a focus on delivering a "wow" experience for first-time users through animated visualizations, gamification elements, and smart notifications.
+
+---
+
+## 🎯 Core Objectives
+
+1. Display real-time cryptocurrency prices with beautiful visualizations
+2. Enable virtual portfolio tracking (paper trading)
+3. Provide market insights through interactive charts
+4. Surprise users with delightful micro-interactions and AI features
+5. Zero cost for data (using free API tiers)
+
+---
+
+## 📊 Recommended Free API Strategy
+
+### Primary: CoinGecko API (Best Choice)
+- **Free Tier**: 30 calls/min, 10,000 calls/month
+- **No API Key Required** for basic endpoints
+- **Coverage**: 18,000+ coins, 1,500+ exchanges
+- **Why**: More generous free tier, no CORS issues with public endpoints
+
+### Backup: CoinMarketCap API  
+- **Free Tier**: ~333 calls/day (10,000 credits/month)
+- **Requires**: API Key + Backend Proxy (CORS blocked)
+- **Coverage**: 2.4M+ tokens, 790+ exchanges
+
+### Supplementary: Binance Public API
+- **Free**: No rate limits on public endpoints
+- **Use for**: Real-time WebSocket price streams
+- **Why**: Sub-second price updates for top coins
+
+---
+
+## ✨ WOW Features (First-Time User Surprise)
+
+### 1. 🎬 Cinematic Onboarding
+- Animated globe showing live transactions pulsing around the world
+- Particles flowing between exchange nodes
+- "Welcome to the crypto universe" intro sequence (skippable)
+
+### 2. 🌊 Liquid Price Visualization
+- Prices displayed as "flowing liquid" that rises/falls smoothly
+- Color morphs from green to red based on 24h change
+- Glassmorphism cards with depth parallax on hover
+
+### 3. 🎮 Gamification System
+- **Achievement Badges**: "Night Owl Trader", "Diamond Hands", "Early Bird"
+- **Daily Streak**: Track consecutive days of checking portfolio
+- **XP System**: Earn points for using features, unlock themes
+- **Leaderboard**: Compare virtual portfolio performance
+
+### 4. 🤖 AI-Powered Insights (Claude API in Artifact)
+- Natural language market summary: "BTC is having a rough day..."
+- Sentiment analysis from trending coins
+- "Ask AI" chatbot for crypto questions
+- Weekly AI-generated portfolio report
+
+### 5. 🔔 Smart Notifications
+- Price alerts with custom thresholds
+- "Whale Alert" style large transaction notifications
+- Fear & Greed Index changes
+- Browser push notifications
+
+### 6. 📈 Interactive Charts
+- Touch/drag to see price at any point
+- Pinch to zoom on mobile
+- Candlestick, Line, Area chart modes
+- Draw trend lines and save them
+
+### 7. 🌙 Dynamic Themes
+- Auto dark/light based on time
+- "Crypto Winter" theme (blue/cold when market is down)
+- "Bull Run" theme (golden/warm when market is up)
+- Neon cyberpunk theme unlock
+
+### 8. 🎲 Fun Easter Eggs
+- Konami code unlocks retro 8-bit mode
+- Shake phone to "shake up" the portfolio order
+- Double-tap BTC logo for satoshi quote
+- Confetti explosion when portfolio hits ATH
+
+---
+
+## 🏗️ Technical Architecture
+
+### Frontend Stack
+```
+Next.js 14+ (App Router)
+├── TailwindCSS + Framer Motion (animations)
+├── Recharts / Lightweight Charts (TradingView)
+├── React Query (data fetching + caching)
+├── Zustand (state management)
+└── PWA enabled (offline support)
+```
+
+### Backend Strategy
+```
+Next.js API Routes (Edge Functions)
+├── /api/prices → Cached CoinGecko proxy
+├── /api/portfolio → Local storage sync
+├── /api/ai-insight → Claude API integration
+└── /api/alerts → Notification triggers
+```
+
+### Data Flow
+```
+[CoinGecko API] ──→ [Next.js API Cache (5min)] ──→ [React Query]
+                                                        ↓
+[Binance WebSocket] ──→ [Real-time Price Updates] ──→ [UI]
+                                                        ↓
+[Local Storage] ←──→ [Portfolio State] ←──→ [Persistent Storage API]
+```
+
+---
+
+## 📱 Core Pages & Features
+
+### 1. Dashboard (Home)
+- Market overview cards (BTC, ETH, trending)
+- Portfolio value chart (7d/30d/1y)
+- Quick actions: Buy/Sell (paper), Alerts
+- AI daily summary card
+
+### 2. Markets
+- Sortable/filterable coin table
+- Sparkline mini-charts
+- Quick add to watchlist
+- Categories: DeFi, NFT, Memes, Layer 2
+
+### 3. Coin Detail
+- Full price chart with indicators
+- Key stats: MCap, Volume, Supply
+- Price converter calculator
+- Related news/social (if API allows)
+
+### 4. Portfolio (Paper Trading)
+- Virtual $10,000 starting balance
+- Buy/Sell with simulated fees
+- P&L tracking with charts
+- Transaction history
+
+### 5. Alerts & Notifications
+- Price threshold alerts
+- Percentage change alerts  
+- Portfolio value alerts
+- Custom notification sounds
+
+### 6. Profile & Achievements
+- Achievement showcase
+- XP progress bar
+- Theme selector
+- Export portfolio data
+
+---
+
+## 🔧 Implementation Phases
+
+### Phase 1: Foundation (Week 1-2)
+- [ ] Project setup (Next.js, Tailwind, TypeScript)
+- [ ] CoinGecko API integration with caching
+- [ ] Basic dashboard with price cards
+- [ ] Simple line charts
+
+### Phase 2: Core Features (Week 3-4)
+- [ ] Markets page with sorting/filtering
+- [ ] Coin detail page with full charts
+- [ ] Paper trading portfolio system
+- [ ] Local storage persistence
+
+### Phase 3: WOW Factor (Week 5-6)
+- [ ] Cinematic onboarding animation
+- [ ] Liquid price visualization
+- [ ] Gamification system (XP, badges)
+- [ ] Theme switching
+
+### Phase 4: AI & Polish (Week 7-8)
+- [ ] Claude API integration for insights
+- [ ] Notification system
+- [ ] PWA setup
+- [ ] Performance optimization
+- [ ] Easter eggs
+
+---
+
+## 💾 Data Caching Strategy
+
+```javascript
+// Optimal caching to stay within free limits
+const CACHE_CONFIG = {
+  prices: 60,        // 1 min - real-time feel
+  marketData: 300,   // 5 min - detailed coin info  
+  trending: 600,     // 10 min - trending coins
+  globalStats: 300,  // 5 min - market cap, volume
+  historicalChart: 3600, // 1 hour - price history
+};
+
+// Estimated daily calls: ~200-300 (well within 333/day limit)
+```
+
+---
+
+## 🎨 Design Inspiration
+
+- **Glassmorphism**: Frosted glass cards with blur
+- **Neumorphism**: Soft shadows on buttons
+- **Gradients**: Vibrant purple-blue-cyan flows
+- **Micro-animations**: Everything responds to interaction
+- **Typography**: Inter/Outfit for clean modern feel
+
+---
+
+## 🚫 Limitations to Accept
+
+1. **No real trading** - Paper trading only (no exchange integration)
+2. **Historical data limited** - Free tier may limit historical range
+3. **Update delay** - 1-5 min delay vs real exchanges
+4. **Rate limits** - Must cache aggressively
+5. **No WebSocket on CoinGecko free** - Polling only
+
+---
+
+## 🎯 Success Metrics
+
+- [ ] First Contentful Paint < 1.5s
+- [ ] Lighthouse Performance > 90
+- [ ] User can see prices within 3 seconds
+- [ ] Smooth 60fps animations
+- [ ] Works offline (PWA)
+- [ ] Mobile-first responsive design
+
+---
+
+## 🔐 Security Considerations
+
+- API keys stored in environment variables
+- No sensitive user data collected
+- Rate limiting on API routes
+- Input sanitization for search
+- CSP headers configured
+
+---
+
+## 💡 Future Enhancements (Post-MVP)
+
+- [ ] Social features (share portfolio)
+- [ ] Multi-currency support (VND, EUR)
+- [ ] Widget for phone home screen
+- [ ] Browser extension for quick check
+- [ ] Telegram bot integration
+- [ ] NFT portfolio tracking
