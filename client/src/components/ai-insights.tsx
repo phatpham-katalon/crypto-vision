@@ -27,8 +27,8 @@ export function AIInsights({ compact = false }: AIInsightsProps) {
 
   const askMutation = useMutation({
     mutationFn: async (q: string) => {
-      const res = await apiRequest<{ answer: string }>('POST', '/api/ai/ask', { question: q });
-      return res;
+      const res = await apiRequest('POST', '/api/ai/ask', { question: q });
+      return await res.json() as { answer: string };
     },
   });
 

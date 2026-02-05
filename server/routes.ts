@@ -188,9 +188,11 @@ export async function registerRoutes(
   app.get("/api/ai/market-insight", async (req, res) => {
     try {
       const [globalData, topCoins] = await Promise.all([
-        fetchCoinGecko("/global"),
+        fetchCoinGecko("/global", "global", CACHE_TTL.global),
         fetchCoinGecko(
-          "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h"
+          "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h",
+          "ai-coins-10",
+          CACHE_TTL.coins
         ),
       ]);
 
@@ -268,7 +270,9 @@ Be concise and analytical. Focus on actionable insights.`;
       }
 
       const topCoins = await fetchCoinGecko(
-        "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h"
+        "/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h",
+        "ai-coins-20",
+        CACHE_TTL.coins
       );
 
       const marketContext = topCoins.slice(0, 10).map((c: any) => 
