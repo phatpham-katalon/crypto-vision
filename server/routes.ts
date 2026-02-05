@@ -11,12 +11,15 @@ const anthropic = new Anthropic({
 
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = {
-  coins: 60 * 1000,
-  global: 2 * 60 * 1000,
-  trending: 5 * 60 * 1000,
-  history: 60 * 1000,
-  detail: 5 * 60 * 1000,
+  coins: 2 * 60 * 1000,
+  global: 5 * 60 * 1000,
+  trending: 10 * 60 * 1000,
+  history: 5 * 60 * 1000,
+  detail: 10 * 60 * 1000,
 };
+
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 2500;
 
 function getCached(key: string, ttl: number): any | null {
   const cached = cache.get(key);
@@ -36,24 +39,41 @@ async function fetchCoinGecko(endpoint: string, cacheKey: string, ttl: number, r
     return cached;
   }
 
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    await new Promise((r) => setTimeout(r, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
+  }
+
   for (let i = 0; i < retries; i++) {
     try {
+      lastRequestTime = Date.now();
       const response = await fetch(`${COINGECKO_BASE_URL}${endpoint}`);
+      
       if (response.status === 429) {
-        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+        const waitTime = 3000 * (i + 1);
+        console.log(`[CoinGecko] Rate limited for ${cacheKey}, waiting ${waitTime}ms...`);
+        await new Promise((r) => setTimeout(r, waitTime));
         continue;
       }
+      
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[CoinGecko] API error ${response.status} for ${cacheKey}: ${errorText}`);
         throw new Error(`CoinGecko API error: ${response.status}`);
       }
+      
       const data = await response.json();
       setCache(cacheKey, data);
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      console.error(`[CoinGecko] Attempt ${i + 1} failed for ${cacheKey}: ${error.message}`);
       if (i === retries - 1) throw error;
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 2000));
     }
   }
+  
+  throw new Error('CoinGecko API failed after all retries');
 }
 
 export async function registerRoutes(
@@ -109,7 +129,7 @@ export async function registerRoutes(
       res.json(data || {});
     } catch (error: any) {
       console.error("Error fetching coin detail:", error.message);
-      res.json({});
+      res.status(503).json({ error: "Service temporarily unavailable" });
     }
   });
 
@@ -139,7 +159,7 @@ export async function registerRoutes(
       res.json(data);
     } catch (error: any) {
       console.error("Error fetching price history:", error.message);
-      res.json({ prices: [], market_caps: [], total_volumes: [] });
+      res.status(503).json({ prices: [], market_caps: [], total_volumes: [], error: "Service temporarily unavailable" });
     }
   });
 

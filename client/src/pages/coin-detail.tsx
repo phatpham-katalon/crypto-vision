@@ -51,20 +51,54 @@ export default function CoinDetailPage() {
     }
   }, [coinId, trackCoinView]);
 
-  const { data: coin, isLoading: coinLoading } = useQuery<Coin>({
+  const { data: coin, isLoading: coinLoading, error: coinError, isFetching: coinFetching } = useQuery<Coin>({
     queryKey: ['/api/crypto/coin', coinId],
     enabled: !!coinId,
+    retry: 1,
+    retryDelay: 1500,
   });
 
-  const { data: coinDetail, isLoading: detailLoading } = useQuery<CoinDetail>({
+  const { data: coinDetail } = useQuery<CoinDetail>({
     queryKey: ['/api/crypto/coin-detail', coinId],
     enabled: !!coinId,
+    retry: 1,
   });
 
-  const { data: priceHistory, isLoading: historyLoading } = useQuery<PriceHistory>({
+  const { data: priceHistory, isLoading: historyLoading, error: historyError } = useQuery<PriceHistory>({
     queryKey: ['/api/crypto/history', coinId, selectedRange],
     enabled: !!coinId,
+    retry: 2,
+    retryDelay: 1000,
   });
+
+  const isQueryDone = !coinLoading && !coinFetching;
+  const hasError = coinError || (isQueryDone && !coin);
+  
+  if (hasError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/markets">
+            <Button variant="ghost" size="sm" className="gap-1 -ml-2" data-testid="button-back">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Markets
+            </Button>
+          </Link>
+        </div>
+        <Card className="border border-border/50 bg-card/50 p-8">
+          <div className="text-center space-y-4">
+            <h2 className="text-xl font-semibold" data-testid="text-error-heading">Unable to load coin data</h2>
+            <p className="text-muted-foreground">
+              The CoinGecko API is temporarily unavailable. This often happens due to rate limiting on the free tier.
+            </p>
+            <Button onClick={() => window.location.reload()} data-testid="button-try-again">
+              Try Again
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (coinLoading || !coin) {
     return (
