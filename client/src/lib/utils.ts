@@ -51,7 +51,15 @@ export function formatCompactCurrency(value: number): string {
   return formatCurrency(value);
 }
 
-export function formatPercentage(value: number): string {
+export function formatPercentage(value: number | null | undefined): string {
+  if (value === null || value === undefined) {
+    return '--';
+  }
+
+  if (Number.isNaN(value)) {
+    return '--';
+  }
+
   const sign = value >= 0 ? '+' : '';
   return `${sign}${value.toFixed(2)}%`;
 }

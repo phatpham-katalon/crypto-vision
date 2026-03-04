@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   Bell,
   BellOff,
@@ -32,8 +32,10 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAppStore } from '@/lib/store';
+import { apiRequest } from '@/lib/queryClient';
 import { formatCurrency, timeAgo, cn } from '@/lib/utils';
-import type { Coin } from '@shared/types';
+import { useToast } from '@/hooks/use-toast';
+import type { Coin, PriceAlert } from '@shared/types';
 
 export default function Alerts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +44,8 @@ export default function Alerts() {
   const [condition, setCondition] = useState<'above' | 'below'>('above');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { alerts, addAlert, removeAlert, unlockAchievement } = useAppStore();
+  const { toast } = useToast();
+  const { alerts, addAlertFromApi, removeAlert, unlockAchievement } = useAppStore();
 
   const { data: coins } = useQuery<Coin[]>({
     queryKey: ['/api/crypto/coins', { limit: 100 }],
@@ -59,28 +62,66 @@ export default function Alerts() {
 
   const selectedCoin = coins?.find((c) => c.id === selectedCoinId);
 
-  const handleCreateAlert = () => {
-    if (!selectedCoin || !targetPrice) return;
+  const createAlertMutation = useMutation<PriceAlert, Error>({
+    mutationFn: async () => {
+      if (!selectedCoin) throw new Error('Please select a coin');
+      const parsed = Number(targetPrice);
+      if (!Number.isFinite(parsed) || parsed <= 0) {
+        throw new Error('Please enter a valid target price');
+      }
 
-    addAlert({
-      coinId: selectedCoin.id,
-      symbol: selectedCoin.symbol,
-      name: selectedCoin.name,
-      image: selectedCoin.image,
-      targetPrice: parseFloat(targetPrice),
-      condition,
-      isActive: true,
-    });
+      const res = await apiRequest('POST', '/api/alerts', {
+        coinId: selectedCoin.id,
+        symbol: selectedCoin.symbol,
+        name: selectedCoin.name,
+        image: selectedCoin.image,
+        targetPrice: parsed,
+        condition,
+        isActive: true,
+      });
 
-    if (alerts.length === 0) {
-      unlockAchievement('alert-setter');
-    }
+      return (await res.json()) as PriceAlert;
+    },
+    onSuccess: (created) => {
+      addAlertFromApi(created);
 
-    setIsModalOpen(false);
-    setSelectedCoinId('');
-    setTargetPrice('');
-    setCondition('above');
-  };
+      if (alerts.length === 0) {
+        unlockAchievement('alert-setter');
+      }
+
+      toast({
+        title: 'Alert created',
+        description: `${created.name} price goes ${created.condition} ${formatCurrency(created.targetPrice)}`,
+      });
+
+      setIsModalOpen(false);
+      setSelectedCoinId('');
+      setTargetPrice('');
+      setCondition('above');
+    },
+    onError: (err) => {
+      toast({
+        title: 'Failed to create alert',
+        description: err.message || 'Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const deleteAlertMutation = useMutation<void, Error, string>({
+    mutationFn: async (alertId) => {
+      const res = await apiRequest('DELETE', `/api/alerts/${alertId}`);
+      // 204 has no body; apiRequest already validated status
+      void res;
+    },
+    onError: (err) => {
+      toast({
+        title: 'Failed to delete alert',
+        description: err.message || 'Please try again.',
+        variant: 'destructive',
+      });
+    },
+  });
 
   return (
     <div className="space-y-8">
@@ -228,12 +269,12 @@ export default function Alerts() {
 
               <Button
                 className="w-full"
-                onClick={handleCreateAlert}
-                disabled={!selectedCoinId || !targetPrice}
+                onClick={() => createAlertMutation.mutate()}
+                disabled={!selectedCoinId || !targetPrice || createAlertMutation.isPending}
                 data-testid="button-confirm-alert"
               >
                 <Bell className="w-4 h-4 mr-2" />
-                Create Alert
+                {createAlertMutation.isPending ? 'Creating...' : 'Create Alert'}
               </Button>
             </div>
           </DialogContent>
@@ -307,7 +348,10 @@ export default function Alerts() {
                         variant="ghost"
                         size="icon"
                         className="text-muted-foreground hover:text-destructive"
-                        onClick={() => removeAlert(alert.id)}
+                        onClick={() => {
+                          removeAlert(alert.id);
+                          deleteAlertMutation.mutate(alert.id);
+                        }}
                         data-testid={`delete-alert-${alert.id}`}
                       >
                         <Trash2 className="w-4 h-4" />

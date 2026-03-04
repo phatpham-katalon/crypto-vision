@@ -28,6 +28,7 @@ interface AppState {
   updateHoldingPrices: (prices: Record<string, number>) => void;
   
   addAlert: (alert: Omit<PriceAlert, 'id' | 'createdAt' | 'isTriggered'>) => void;
+  addAlertFromApi: (alert: PriceAlert) => void;
   removeAlert: (alertId: string) => void;
   triggerAlert: (alertId: string) => void;
   
@@ -239,6 +240,13 @@ export const useAppStore = create<AppState>()(
           },
         ],
       })),
+
+      addAlertFromApi: (alert) => set((state) => {
+        if (state.alerts.some((a) => a.id === alert.id)) {
+          return state;
+        }
+        return { alerts: [...state.alerts, alert] };
+      }),
 
       removeAlert: (alertId) => set((state) => ({
         alerts: state.alerts.filter((a) => a.id !== alertId),

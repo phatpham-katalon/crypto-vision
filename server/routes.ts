@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Anthropic from "@anthropic-ai/sdk";
+import type { PriceAlert } from "../shared/types";
 
 const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
 
@@ -20,6 +21,8 @@ const CACHE_TTL = {
 
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 2500;
+
+const alertsStore: PriceAlert[] = [];
 
 function getCached(key: string, ttl: number): any | null {
   const cached = cache.get(key);
@@ -81,6 +84,66 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.get("/api/alerts", (_req, res) => {
+    res.json(alertsStore);
+  });
+
+  app.post("/api/alerts", (req, res) => {
+    try {
+      const {
+        coinId,
+        symbol,
+        name,
+        image,
+        targetPrice,
+        condition,
+        isActive,
+      } = req.body ?? {};
+
+      if (
+        typeof coinId !== "string" ||
+        typeof symbol !== "string" ||
+        typeof name !== "string" ||
+        typeof image !== "string" ||
+        typeof targetPrice !== "number" ||
+        !Number.isFinite(targetPrice) ||
+        (condition !== "above" && condition !== "below") ||
+        typeof isActive !== "boolean"
+      ) {
+        return res.status(400).json({ error: "Invalid alert payload" });
+      }
+
+      const created: PriceAlert = {
+        id: `alert-${Date.now()}`,
+        coinId,
+        symbol,
+        name,
+        image,
+        targetPrice,
+        condition,
+        isActive,
+        isTriggered: false,
+        createdAt: Date.now(),
+      };
+
+      alertsStore.push(created);
+      return res.status(201).json(created);
+    } catch (error: any) {
+      console.error("Error creating alert:", error.message);
+      return res.status(500).json({ error: "Failed to create alert" });
+    }
+  });
+
+  app.delete("/api/alerts/:id", (req, res) => {
+    const { id } = req.params;
+    const idx = alertsStore.findIndex((a) => a.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ error: "Alert not found" });
+    }
+    alertsStore.splice(idx, 1);
+    return res.status(204).send();
+  });
+
   app.get("/api/crypto/coins", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 50;

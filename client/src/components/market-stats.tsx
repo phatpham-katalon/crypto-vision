@@ -11,7 +11,7 @@ interface MarketStatsProps {
 }
 
 export function MarketStats({ data, isLoading }: MarketStatsProps) {
-  if (isLoading || !data || !data.total_market_cap) {
+  if (isLoading || !data?.data?.total_market_cap) {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
@@ -29,7 +29,7 @@ export function MarketStats({ data, isLoading }: MarketStatsProps) {
     );
   }
 
-  const marketData = data;
+  const marketData = data.data;
   const isPositive = (marketData.market_cap_change_percentage_24h_usd || 0) >= 0;
 
   const stats = [
